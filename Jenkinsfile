@@ -10,21 +10,37 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                sh 'npm install'
+                script {
+                    if (isUnix()) {
+                        sh 'npm install'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
             }
         }
 
         stage('Install Playwright browsers') {
             steps {
-                sh 'npx playwright install --with-deps chromium'
+                script {
+                    if (isUnix()) {
+                        sh 'npx playwright install --with-deps chromium'
+                    } else {
+                        bat 'npx playwright install chromium'
+                    }
+                }
             }
         }
 
         stage('Run automated tests') {
             steps {
-                // playwright.config.js seeds the database and starts the app
-                // itself before running any test - nothing to start manually.
-                sh 'npx playwright test'
+                script {
+                    if (isUnix()) {
+                        sh 'npx playwright test'
+                    } else {
+                        bat 'npx playwright test'
+                    }
+                }
             }
         }
     }
