@@ -1,0 +1,11 @@
+node_modules
+.git
+test-results
+playwright-report
+db/*.sqlite
+db/*.sqlite3
+*.log
+tests
+playwright.config.js
+.github
+docs

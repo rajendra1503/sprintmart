@@ -1,6 +1,15 @@
 // @ts-check
 const { defineConfig } = require('@playwright/test');
 
+// Local runs and GitHub Actions: BASE_URL is unset, so Playwright starts and
+// seeds its own throwaway copy of the app (webServer block below).
+//
+// Jenkins' CD stage sets BASE_URL to point at the persistent "staging"
+// Docker container it just built and deployed. In that case there is
+// nothing for Playwright to start - it just points at what's already
+// running - so the webServer block is skipped entirely.
+const baseURL = process.env.BASE_URL || 'http://localhost:3000';
+
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 30_000,
@@ -10,17 +19,15 @@ module.exports = defineConfig({
     ['junit', { outputFile: 'test-results/junit.xml' }],
   ],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL,
     trace: 'on-first-retry',
   },
-  // Playwright starts the app itself (reseeding first) and waits for it to
-  // respond before running any test - both locally and in CI. Locally, if
-  // you already have `npm start` running in another terminal, it reuses
-  // that server instead of starting a second one.
-  webServer: {
-    command: 'npm run seed && npm start',
-    url: 'http://localhost:3000/products',
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
-  },
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'npm run seed && npm start',
+        url: 'http://localhost:3000/products',
+        reuseExistingServer: !process.env.CI,
+        timeout: 30_000,
+      },
 });
