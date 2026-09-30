@@ -1,0 +1,56 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main class="wrap">
+  <h1>Shop</h1>
+
+  <form action="/products" method="GET" class="filters">
+    <input type="text" name="q" placeholder="Search products..." value="<%= q %>" />
+
+    <label for="category">Category</label>
+    <select name="category" id="category" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      <% categories.forEach(c => { %>
+        <option value="<%= c %>" <%= category === c ? 'selected' : '' %>><%= c %></option>
+      <% }) %>
+    </select>
+
+    <label for="sort">Sort</label>
+    <select name="sort" id="sort" onchange="this.form.submit()">
+      <option value="">Featured</option>
+      <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+      <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
+      <option value="name_asc" <%= sort === 'name_asc' ? 'selected' : '' %>>Name: A to Z</option>
+    </select>
+
+    <button type="submit">Search</button>
+  </form>
+
+  <p class="muted"><%= totalCount %> product<%= totalCount === 1 ? '' : 's' %> found</p>
+
+  <div class="product-grid">
+    <% products.forEach(p => { %>
+      <a class="product-card" href="/products/<%= p.id %>">
+        <div class="product-emoji"><%= p.emoji %></div>
+        <div class="product-name"><%= p.name %></div>
+        <div class="product-category"><%= p.category %></div>
+        <div class="product-price">$<%= (p.price_cents / 100).toFixed(2) %></div>
+      </a>
+    <% }) %>
+  </div>
+
+  <% if (products.length === 0) { %>
+    <p class="muted">No products match your filters.</p>
+  <% } %>
+
+  <div class="pagination">
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a class="page-link <%= i === page ? 'active' : '' %>"
+         href="/products?page=<%= i %><%= q ? '&q=' + encodeURIComponent(q) : '' %><%= category ? '&category=' + encodeURIComponent(category) : '' %><%= sort ? '&sort=' + sort : '' %>">
+        <%= i %>
+      </a>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
