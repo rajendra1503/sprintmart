@@ -17,6 +17,7 @@ module.exports = defineConfig({
   reporter: [
     ['list'],
     ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
     baseURL,

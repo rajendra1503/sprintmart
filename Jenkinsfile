@@ -88,19 +88,28 @@ pipeline {
                             exit 1
                         '''
                     } else {
+                        // A "for /l" loop here would be simpler, but "exit /b"
+                        // inside a parenthesized for-loop body doesn't reliably
+                        // break out of the loop in Windows batch - it just
+                        // keeps iterating. A goto-based loop avoids that trap.
                         bat '''
                             setlocal enabledelayedexpansion
-                            for /l %%i in (1,1,30) do (
-                                curl -sf http://localhost:3001/products >nul 2>&1
-                                if !errorlevel! == 0 (
-                                    echo Staging is up.
-                                    exit /b 0
-                                )
-                                echo Waiting for staging...
-                                timeout /t 2 >nul
+                            set count=0
+                            :waitloop
+                            set /a count+=1
+                            curl -sf http://localhost:3001/products >nul 2>&1
+                            if !errorlevel! == 0 (
+                                echo Staging is up.
+                                goto :ready
                             )
-                            echo Staging never became ready.
-                            exit /b 1
+                            if !count! geq 30 (
+                                echo Staging never became ready.
+                                exit /b 1
+                            )
+                            echo Waiting for staging...
+                            timeout /t 2 >nul
+                            goto :waitloop
+                            :ready
                         '''
                     }
                 }
