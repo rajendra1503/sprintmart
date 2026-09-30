@@ -1,0 +1,23 @@
+{
+  "name": "sprintmart",
+  "version": "1.0.0",
+  "description": "SprintMart - an e-commerce app built incrementally, sprint by sprint, to teach Git/GitHub, Agile delivery, CI/CD, and test automation maintenance.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node db/seed.js",
+    "test": "playwright test"
+  },
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0"
+  }
+}
